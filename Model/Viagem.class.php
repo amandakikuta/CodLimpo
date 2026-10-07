@@ -48,11 +48,11 @@ class Viagem
             $con = Database::conectar();
 
             //Prepara sql
-            $sql = $con->prepare('INSERT INTO viagem VALUES (default, :nome, :descricao, :img, false)');
+            $sql = $con->prepare('INSERT INTO viagem VALUES (default, :nomeViagemViagem, :descricaoViagem, :imgViagem, false)');
 
-            $sql->bindValue(':nome', $this->nomeViagem);
-            $sql->bindValue(':descricao', $this->descricaoViagem);
-            $sql->bindValue(':img', $this->pathImgViagem);
+            $sql->bindValue(':nomeViagem', $this->nomeViagem);
+            $sql->bindValue(':descricaoViagem', $this->descricaoViagem);
+            $sql->bindValue(':imgViagem', $this->pathImgViagem);
 
             return $sql->execute();
         } catch (PDOException $e) {
@@ -67,8 +67,8 @@ class Viagem
         try {
             $conn = Database::conectar();
 
-            $stmt = $conn->prepare("DELETE FROM viagem WHERE id=:id");
-            $stmt->bindParam(':id', $idViagem);
+            $stmt = $conn->prepare("DELETE FROM viagem WHERE id=:idViagem");
+            $stmt->bindParam(':idViagem', $idViagem);
 
             return $stmt->execute();
         } catch (PDOException $e) {
@@ -106,11 +106,11 @@ class Viagem
     {
 
         if (!empty(Viagem::listar())) {
-            $i = 0;
+            $indiceViagem = 0;
 
             foreach (Viagem::listar() as $viagem) {
 
-                if ($i % 2 == 0) {
+                if ($indiceViagem % 2 == 0) {
                     echo "<div class=\"itens\">";
                 }
 
@@ -145,11 +145,11 @@ class Viagem
                 </div>
                 ";
 
-                if (($i + 1) % 2 == 0) {
+                if (($indiceViagem + 1) % 2 == 0) {
                     echo "</div>";
                 }
 
-                $i++;
+                $indiceViagem++;
 
             }
 
@@ -164,8 +164,8 @@ class Viagem
         try {
             $conn = Database::conectar();
 
-            $stmt = $conn->prepare("UPDATE viagem SET favorito = true WHERE id=:id");
-            $stmt->bindParam(':id', $idViagem);
+            $stmt = $conn->prepare("UPDATE viagem SET favorito = true WHERE id=:idViagem");
+            $stmt->bindParam(':idViagem', $idViagem);
 
             return $stmt->execute();
         } catch (PDOException $e) {
@@ -179,8 +179,8 @@ class Viagem
         try {
             $conn = Database::conectar();
 
-            $stmt = $conn->prepare("UPDATE viagem SET favorito = false WHERE id=:id");
-            $stmt->bindParam(':id', $idViagem);
+            $stmt = $conn->prepare("UPDATE viagem SET favorito = false WHERE id=:idViagem");
+            $stmt->bindParam(':idViagem', $idViagem);
 
             return $stmt->execute();
         } catch (PDOException $e) {
@@ -194,8 +194,8 @@ class Viagem
         try {
             $conn = Database::conectar();
 
-            $stmt = $conn->prepare("SELECT * FROM viagem WHERE id=:id");
-            $stmt->bindParam(':id', $idViagem);
+            $stmt = $conn->prepare("SELECT * FROM viagem WHERE id=:idViagem");
+            $stmt->bindParam(':idViagem', $idViagem);
 
             $stmt->execute();
             $linha = $stmt->fetch();

@@ -10,17 +10,19 @@ if ($atual != CAMINHO) {
     header('Location:./../index.php');
 }
 
+const MAX_FILE_SIZE_BYTES = 1500000;
+
 class ImagemPHP
 {
     public const DIRETORIO_IMG = './../img/';
     private static $ultimoUpload;
 
     /**
-     * Faz upload da imagem de name $file_input_name para a pasta DIRETORIO_IMG.
+     * Faz upload da imagem de name $fileInputName para a pasta DIRETORIO_IMG.
      * Se já houver imagem com mesmo nome, sobreescreve.
      */
 
-    public static function salvarImagem($file_input_name)
+    public static function salvarImagem($fileInputName)
     {
         $erro = null;
         //Se não exsitir pasta, cria
@@ -29,22 +31,21 @@ class ImagemPHP
         }
 
         //caminho completo para salvar imagem
-        $target_file = ImagemPHP::DIRETORIO_IMG . basename($_FILES[$file_input_name]["name"]);
-        $ok = 1;
+        $targetFile = ImagemPHP::DIRETORIO_IMG . basename($_FILES[$fileInputName]["name"]);
 
-        //$imageFileType = strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
+        //$imageFileType = strtolower(pathinfo($targetFile, PATHINFO_EXTENSION));
 
         //verifica se é um arquivo
         if (isset($_POST["submit"])) {
 
-            $check = getimagesize($_FILES[$file_input_name]["tmp_name"]);
+            $check = getimagesize($_FILES[$fileInputName]["tmp_name"]);
             if ($check == false) {
                 $erro = new Exception("ARQUIVO NAO E IMAGEM.");
             }
         }
 
         //verifica se não é muito grande
-        if ($_FILES[$file_input_name]["size"] > 1500000) {
+        if ($_FILES[$fileInputName]["size"] > MAX_FILE_SIZE_BYTES) {
             $erro = new Exception("ARQUIVO MUITO GRANDE!");
         }
 
@@ -52,9 +53,8 @@ class ImagemPHP
             throw $erro;
         } else {
             //move arquivo para pasta e retorna o caminho+nome
-            $ok = move_uploaded_file($_FILES[$file_input_name]["tmp_name"], $target_file);
-            if ($ok) {
-                return ImagemPHP::$ultimoUpload = htmlspecialchars($target_file);
+            if (move_uploaded_file($_FILES[$fileInputName]["tmp_name"], $targetFile)) {
+                return ImagemPHP::$ultimoUpload = htmlspecialchars($targetFile);
             } else {
                 return null;
             }

@@ -1,4 +1,5 @@
 /vendor/
+/img/
 composer.phar
 
 # PHP CS Fixer configuration

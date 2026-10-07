@@ -5,6 +5,8 @@ require_once(dirname(__DIR__) . '/Model/Imagem.class.php');
 require_once(dirname(__DIR__) . '/Model/Viagem.class.php');
 require_once(dirname(__DIR__) . '/Model/Database.class.php');
 
+const MAX_CHAR_LENGTH = 20;
+
 function carregarHome()
 {
     //Define a página em que o usuário se encontra a partir da função
@@ -125,7 +127,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $descricaoViagem = $_POST['descricao'];
 
         //Validação do campo nome
-        if (contarLetras($nomeViagem) > 20) {
+        if (contarLetras($nomeViagem) > MAX_CHAR_LENGTH) {
             echo "<script>alert('Erro ao cadastrar, o nome não deve possuir mais de 20 caracteres')</script>";
             header("Refresh:0; url=./Viagem.ctrl.php?act=cad");
             exit();
