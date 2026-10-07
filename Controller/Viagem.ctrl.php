@@ -64,7 +64,7 @@ function redirecionar($url)
 
 function validarId($idViagem)
 {
-    if(!is_numeric($idViagem) || $idViagem < 0 || $idViagem === null) {
+    if (!is_numeric($idViagem) || $idViagem < 0 || $idViagem === null) {
         return false;
     }
 
@@ -89,7 +89,7 @@ function salvarViagem()
         //Pega os valores que veio por post
         $nomeViagem = $_POST['nome'] ?? '';
         $descricaoViagem = $_POST['descricao'] ?? '';
-    
+
         if ($nomeViagem === '' || $descricaoViagem === '') {
             redirecionar("./Viagem.ctrl.php?act=cad&msg=Erro ao cadastrar, preencha todos os campos obrigatórios!");
         }
@@ -141,7 +141,7 @@ function favoritarViagem()
 {
     try {
         $idViagem = obterId();
-    
+
         if (!Viagem::idIsValid($idViagem)) {
             throw new InvalidArgumentException("ID inválido!");
         }
@@ -177,16 +177,16 @@ if ($metodoRequisicao === 'GET') {
         case 'favoritar':
             favoritarViagem();
             break;
-        
+
         case 'del':
             apagarViagem();
             break;
-        
+
         default:
             carregarHome();
             break;
     }
-} 
+}
 
 if ($metodoRequisicao === 'POST') {
     switch ($acao) {

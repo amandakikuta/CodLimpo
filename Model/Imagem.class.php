@@ -65,6 +65,7 @@ class ImagemPHP
             throw new Exception('Não foi possível salvar a imagem.');
         }
 
-        return self::$ultimoUpload = htmlspecialchars($targetFile);;
+        return self::$ultimoUpload = htmlspecialchars($targetFile);
+        ;
     }
 }
