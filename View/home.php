@@ -1,20 +1,20 @@
 <?php
-    require_once(dirname(__DIR__).'/paths.php');
+require_once(dirname(__DIR__) . '/paths.php');
 
-    //Validação
+//Validação
 
-    $atual = basename(dirname($_SERVER['SCRIPT_FILENAME']));
+$atual = basename(dirname($_SERVER['SCRIPT_FILENAME']));
 
-    if($atual != CAMINHO){
-        header('Location:./../index.php');
-    }
+if ($atual != CAMINHO) {
+    header('Location:./../index.php');
+}
 
 ?>
 
 <title>Home</title>
 
 <body class="cinzaClaro">
-    
+
     <div class="flex mt-2">
 
         <div class="azulEscuro flex border-radius p-titulo mt-2">
@@ -29,5 +29,5 @@
         </div>
 
     </div>
-    
+
 </body>

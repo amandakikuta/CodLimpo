@@ -1,5 +1,3 @@
 <?php
 
 const CAMINHO = "Controller";
-
-?>

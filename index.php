@@ -1,3 +1,3 @@
 <?php
-    header('Location: ./Controller/Viagem.ctrl.php');
-?>
+
+header('Location: ./Controller/Viagem.ctrl.php');

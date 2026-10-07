@@ -1,13 +1,13 @@
 <?php
-    require_once(dirname(__DIR__).'/paths.php');
-    
-    //Validação
+require_once(dirname(__DIR__) . '/paths.php');
 
-    $atual = basename(dirname($_SERVER['SCRIPT_FILENAME']));
+//Validação
 
-    if($atual != CAMINHO){
-        header('Location:./../index.php');
-    }
+$atual = basename(dirname($_SERVER['SCRIPT_FILENAME']));
+
+if ($atual != CAMINHO) {
+    header('Location:./../index.php');
+}
 
 ?>
 
@@ -19,9 +19,9 @@
 
         <div class="flex">
             <div class="azul border-radius sub-titulo patrickHand fonte-branco p-titulo my-4">CADASTRAR NOVA VIAGEM</div>
-            
+
             <form class="bloco azulClaro p-bloco mb-6 flex" action="./../Controller/Viagem.ctrl.php" method="post" enctype="multipart/form-data">
-                
+
                 <div class="flex mb-2">
                     <label class="mb-1 label-size patrickHand" for="nome">Nome:</label>
                     <input class="campo-texto" type="text" maxlength="20" name="nome" placeholder="Nome" required>

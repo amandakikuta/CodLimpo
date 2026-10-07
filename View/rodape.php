@@ -1,13 +1,13 @@
 <?php
-    require_once(dirname(__DIR__).'/paths.php');
+require_once(dirname(__DIR__) . '/paths.php');
 
-    //Validação
+//Validação
 
-    $atual = basename(dirname($_SERVER['SCRIPT_FILENAME']));
+$atual = basename(dirname($_SERVER['SCRIPT_FILENAME']));
 
-    if($atual != CAMINHO){
-        header('Location:./../index.php');
-    }
+if ($atual != CAMINHO) {
+    header('Location:./../index.php');
+}
 
 ?>
 
@@ -16,7 +16,7 @@
     <div class="azulEscuro py-1">
         <p class="text-center small fonte-branco"> ©Amanda Ayumi Koga Kikuta </p>
     </div>
-    
+
 </footer>
 
 </html>

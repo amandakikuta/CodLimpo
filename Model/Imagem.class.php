@@ -1,11 +1,12 @@
 <?php
-require_once(dirname(__DIR__).'/paths.php');
+
+require_once(dirname(__DIR__) . '/paths.php');
 
 //Validação
 
 $atual = basename(dirname($_SERVER['SCRIPT_FILENAME']));
 
-if($atual != CAMINHO){
+if ($atual != CAMINHO) {
     header('Location:./../index.php');
 }
 
@@ -19,7 +20,8 @@ class ImagemPHP
      * Se já houver imagem com mesmo nome, sobreescreve.
      */
 
-    public static function salvaImagem($file_input_name){
+    public static function salvaImagem($file_input_name)
+    {
         $erro = null;
         //Se não exsitir pasta, cria
         if (!file_exists(ImagemPHP::DIRETORIO_IMG)) {
@@ -34,7 +36,7 @@ class ImagemPHP
 
         //verifica se é um arquivo
         if (isset($_POST["submit"])) {
-            
+
             $check = getimagesize($_FILES[$file_input_name]["tmp_name"]);
             if ($check == false) {
                 $erro = new Exception("ARQUIVO NAO E IMAGEM.");
@@ -48,14 +50,14 @@ class ImagemPHP
 
         if ($erro != null) {
             throw $erro;
-        }
-        else{
+        } else {
             //move arquivo para pasta e retorna o caminho+nome
             $ok = move_uploaded_file($_FILES[$file_input_name]["tmp_name"], $target_file);
-            if ($ok)
-                return ImagemPHP::$ultimoUpload = htmlspecialchars( $target_file);
-            else
+            if ($ok) {
+                return ImagemPHP::$ultimoUpload = htmlspecialchars($target_file);
+            } else {
                 return null;
+            }
         }
     }
 }

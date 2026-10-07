@@ -1,13 +1,13 @@
 <?php
-    require_once(dirname(__DIR__).'/paths.php');
-    
-    //Validação
+require_once(dirname(__DIR__) . '/paths.php');
 
-    $atual = basename(dirname($_SERVER['SCRIPT_FILENAME']));
+//Validação
 
-    if($atual != CAMINHO){
-        header('Location:./../index.php');
-    }
+$atual = basename(dirname($_SERVER['SCRIPT_FILENAME']));
+
+if ($atual != CAMINHO) {
+    header('Location:./../index.php');
+}
 
 ?>
 
@@ -33,7 +33,7 @@
 <body>
 
     <header>
-    
+
         <div class="nav azul">
             <div class="logo fonte-branco alexBrush titulo negrito">
                 Destiny
