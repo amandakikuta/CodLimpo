@@ -48,15 +48,15 @@ class Viagem
             $con = Database::conectar();
 
             //Prepara sql
-            $sql = $con->prepare('INSERT INTO viagem VALUES (default, :nomeViagemViagem, :descricaoViagem, :imgViagem, false)');
+            $sql = $con->prepare('INSERT INTO viagem VALUES (default, :nomeViagem, :descricaoViagem, :imgViagem, false)');
 
             $sql->bindValue(':nomeViagem', $this->nomeViagem);
             $sql->bindValue(':descricaoViagem', $this->descricaoViagem);
             $sql->bindValue(':imgViagem', $this->pathImgViagem);
 
             return $sql->execute();
-        } catch (PDOException $e) {
-            echo 'Ocorreu um erro ao executar a instrução SQL: ' . $e->getMessage();
+        } catch (PDOException $error) {
+            error_log('Ocorreu um erro ao executar a instrução SQL: ' . $error->getMessage());
             return false;
         }
     }
@@ -71,34 +71,39 @@ class Viagem
             $stmt->bindParam(':idViagem', $idViagem);
 
             return $stmt->execute();
-        } catch (PDOException $e) {
-            die("Erro ao excluir! " . $e->getMessage());
+        } catch (PDOException $error) {
+            error_log("Erro ao excluir! " . $error->getMessage());
+            return false;
         }
     }
 
     //Listar
     public static function listar()
     {
-        $conn = Database::conectar();
+        try {
+            $conn = Database::conectar();
 
-        $stmt = $conn->prepare('SELECT * FROM viagem');
+            $stmt = $conn->prepare('SELECT * FROM viagem');
 
-        $stmt->execute();
+            $stmt->execute();
 
-        while ($linha = $stmt->fetch()) {
-            $viagem = new Viagem(
-                $linha['nome'],
-                $linha['descricao'],
-                $linha['path_imagem'],
-            );
+            while ($linha = $stmt->fetch()) {
+                $viagem = new Viagem(
+                    $linha['nome'],
+                    $linha['descricao'],
+                    $linha['path_imagem'],
+                );
 
-            $viagem->idViagem = $linha['id'];
-            $viagem->favoritoViagem = $linha['favorito'];
+                $viagem->idViagem = $linha['id'];
+                $viagem->favoritoViagem = $linha['favorito'];
 
-            $viagens[] = $viagem;
-        }
-        if (isset($viagens)) {
-            return $viagens;
+                $viagens[] = $viagem;
+            }
+            if (isset($viagens)) {
+                return $viagens;
+            }
+        } catch (Exception $error) {
+            error_log('Erro ao listar viagens! ' . $error->getMessage());
         }
     }
 
@@ -168,8 +173,8 @@ class Viagem
             $stmt->bindParam(':idViagem', $idViagem);
 
             return $stmt->execute();
-        } catch (PDOException $e) {
-            die("Erro ao favoritar! " . $e->getMessage());
+        } catch (PDOException $error) {
+            error_log("Erro ao favoritar! " . $error->getMessage());
         }
     }
 
@@ -183,13 +188,13 @@ class Viagem
             $stmt->bindParam(':idViagem', $idViagem);
 
             return $stmt->execute();
-        } catch (PDOException $e) {
-            die("Erro ao desfavoritar! " . $e->getMessage());
+        } catch (PDOException $error) {
+            error_log("Erro ao desfavoritar! " . $error->getMessage());
         }
     }
 
     //Buscar por id
-    public static function buscarPorId($idViagem)
+    public static function isFavorited($idViagem)
     {
         try {
             $conn = Database::conectar();
@@ -200,8 +205,40 @@ class Viagem
             $stmt->execute();
             $linha = $stmt->fetch();
             return $linha['favorito'];
-        } catch (PDOException $e) {
-            die("Erro ao procurar ID! " . $e->getMessage());
+        } catch (PDOException $error) {
+            error_log("Erro na identificação do campo favorito! " . $error->getMessage());
+        }
+    }
+
+    public static function alternarFavorito($idViagem)
+    {
+        if (self::isFavorited($idViagem)) {
+            return self::desfavoritar($idViagem);
+        }
+
+        return self::favoritar($idViagem);
+    }
+
+    public static function idIsValid($idViagem)
+    {
+        try {
+            $conn = Database::conectar();
+
+            $stmt = $conn->prepare("SELECT * FROM viagem WHERE id=:idViagem");
+            $stmt->bindParam(':idViagem', $idViagem);
+
+            $stmt->execute();
+
+            if ($stmt->rowCount() === 0) {
+                throw new Exception("Nenhum viagem encontrada para o ID fornecido.");
+            }
+
+            return true;
+        } catch (PDOException $error) {
+            error_log($error->getMessage());
+            return false;
+        } catch (Exception $error) {
+            return false;
         }
     }
 }

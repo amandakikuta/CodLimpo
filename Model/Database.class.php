@@ -12,24 +12,27 @@ if ($atual != CAMINHO) {
 
 class Database
 {
-    private const servername = "localhost";
-    private const username = "root";
-    private const password = "";
+    private const SERVERNAME = "localhost";
+    private const USERNAME = "root";
+    private const PASSWORD = "";
+    private const PORT = '3307';
+    private const DATABASE = 'rec2210';
+    private static $conexao = null;
 
     public static function conectar()
     {
-        $conexao = null;
-        try {
-            $conexao = new PDO("mysql:host=" . Database::servername . ";port=3307;dbname=rec2210", Database::username, Database::password);
-            // echo 'conectado';
-            $conexao->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-
-        } catch (PDOException $e) {
-            echo 'Não foi possível conectar ao BD :(<br>';
-            echo $e->getMessage();
+        if (self::$conexao === null) {
+            try {
+                self::$conexao = new PDO("mysql:host=" . Database::SERVERNAME . ";port=3307;dbname=rec2210", Database::USERNAME, Database::PASSWORD);
+                // echo 'conectado';
+                self::$conexao->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            } catch (Exception $error) {
+                error_log('Erro ao conectar com o BD! ' . $error->getMessage());
+                throw $error;
+            }
         }
 
-        return $conexao;
+        return self::$conexao;
     }
 
 }

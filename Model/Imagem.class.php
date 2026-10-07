@@ -22,42 +22,49 @@ class ImagemPHP
      * Se já houver imagem com mesmo nome, sobreescreve.
      */
 
+    public static function validarArquivo($fileInputName)
+    {
+        if (!isset($_FILES[$fileInputName])) {
+            throw new Exception('Nenhuma imagem foi enviada.');
+        }
+
+        $arquivo = $_FILES[$fileInputName];
+
+        if ($arquivo['error'] !== UPLOAD_ERR_OK) {
+            throw new Exception('Erro ao enviar a imagem.');
+        }
+
+        if ($arquivo['size'] > MAX_FILE_SIZE_BYTES) {
+            throw new Exception('Arquivo muito grande!');
+        }
+
+        if (getimagesize($arquivo['tmp_name']) === false) {
+            throw new Exception('O arquivo enviado não é uma imagem.');
+        }
+    }
+
+    private static function criarDiretorio(): void
+    {
+        if (!file_exists(self::DIRETORIO_IMG)) {
+            mkdir(self::DIRETORIO_IMG);
+        }
+    }
+
     public static function salvarImagem($fileInputName)
     {
-        $erro = null;
-        //Se não exsitir pasta, cria
-        if (!file_exists(ImagemPHP::DIRETORIO_IMG)) {
-            mkdir(ImagemPHP::DIRETORIO_IMG);
+        self::validarArquivo($fileInputName);
+
+        self::criarDiretorio();
+
+        $arquivo = $_FILES[$fileInputName];
+
+        $nomeArquivo = basename($arquivo['name']);
+        $targetFile = self::DIRETORIO_IMG . $nomeArquivo;
+
+        if (!move_uploaded_file($arquivo['tmp_name'], $targetFile)) {
+            throw new Exception('Não foi possível salvar a imagem.');
         }
 
-        //caminho completo para salvar imagem
-        $targetFile = ImagemPHP::DIRETORIO_IMG . basename($_FILES[$fileInputName]["name"]);
-
-        //$imageFileType = strtolower(pathinfo($targetFile, PATHINFO_EXTENSION));
-
-        //verifica se é um arquivo
-        if (isset($_POST["submit"])) {
-
-            $check = getimagesize($_FILES[$fileInputName]["tmp_name"]);
-            if ($check == false) {
-                $erro = new Exception("ARQUIVO NAO E IMAGEM.");
-            }
-        }
-
-        //verifica se não é muito grande
-        if ($_FILES[$fileInputName]["size"] > MAX_FILE_SIZE_BYTES) {
-            $erro = new Exception("ARQUIVO MUITO GRANDE!");
-        }
-
-        if ($erro != null) {
-            throw $erro;
-        } else {
-            //move arquivo para pasta e retorna o caminho+nome
-            if (move_uploaded_file($_FILES[$fileInputName]["tmp_name"], $targetFile)) {
-                return ImagemPHP::$ultimoUpload = htmlspecialchars($targetFile);
-            } else {
-                return null;
-            }
-        }
+        return self::$ultimoUpload = htmlspecialchars($targetFile);;
     }
 }

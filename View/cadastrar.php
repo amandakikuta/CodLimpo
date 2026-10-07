@@ -20,7 +20,7 @@ if ($atual != CAMINHO) {
         <div class="flex">
             <div class="azul border-radius sub-titulo patrickHand fonte-branco p-titulo my-4">CADASTRAR NOVA VIAGEM</div>
 
-            <form class="bloco azulClaro p-bloco mb-6 flex" action="./../Controller/Viagem.ctrl.php" method="post" enctype="multipart/form-data">
+            <form class="bloco azulClaro p-bloco mb-6 flex" action="./../Controller/Viagem.ctrl.php?act=save" method="post" enctype="multipart/form-data">
 
                 <div class="flex mb-2">
                     <label class="mb-1 label-size patrickHand" for="nome">Nome:</label>

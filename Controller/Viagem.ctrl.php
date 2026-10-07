@@ -56,80 +56,47 @@ function removerMsg()
     exit;
 }
 
-if (isset($_GET['msg'])) {
-    $msg = $_GET['msg'];
-    echo "<script>alert('$msg')</script>";
-    removerMsg();
+function redirecionar($url)
+{
+    header("Location: $url");
+    exit();
 }
 
-//Chega por get
-if ($_SERVER['REQUEST_METHOD'] == 'GET') {
-
-    //Cadastrar
-    if (isset($_GET['act']) && $_GET['act'] == 'cad') {
-        carregarCadastro();
+function validarId($idViagem)
+{
+    if(!is_numeric($idViagem) || $idViagem < 0 || $idViagem === null) {
+        return false;
     }
 
-    //Carrega Galeria
-    elseif (isset($_GET['act']) && $_GET['act'] == 'galeria') {
-        carregarGaleria();
-    }
-
-    //Favoritar
-    elseif (isset($_GET['act']) && $_GET['act'] == 'favoritar') {
-        if (!isset($_GET['id'])) {
-            $msg = 'ID não encontrado';
-            header("Location: ./Viagem.ctrl.php?msg=$msg");
-        }
-
-        //Faz a ação se tiver o id
-        elseif (isset($_GET['id'])) {
-            $idViagem = $_GET['id'];
-
-            if (Viagem::buscarPorId($idViagem)) {
-                Viagem::desfavoritar($idViagem);
-            } elseif (!Viagem::buscarPorId($idViagem)) {
-                Viagem::favoritar($idViagem);
-            }
-        }
-    }
-
-    //Deletar
-    elseif (isset($_GET['act']) && $_GET['act'] == 'del') {
-        //Interrompe a ação se não vier o id
-        if (!isset($_GET['id'])) {
-            $msg = 'ID não encontrado';
-            header("Location: ./Viagem.ctrl.php?msg=$msg");
-        }
-
-        //Faz a ação se tiver o id
-        elseif (isset($_GET['id'])) {
-            $idViagem = $_GET['id'];
-            $deuCerto = Viagem::apagar($idViagem);
-
-            //* Carrega a página principal
-            $msg = 'Viagem excluida com sucesso!';
-            header("Location: ./Viagem.ctrl.php?act=galeria&msg=$msg");
-        }
-
-    } else {
-        carregarHome();
-    }
-
+    return true;
 }
 
-//Salvar
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+function obterId()
+{
+    if (!isset($_GET['id'])) {
+        throw new Exception("ID não encontrado");
+        redirecionar("./Viagem.ctrl.php?msg=ID <$ID> não encontrado");
+    }
 
-    if (isset($_POST['act']) && $_POST['act'] == 'save') {
+    validarId($_GET['id']);
+
+    return (int) $_GET['id'];
+}
+
+function salvarViagem()
+{
+    try {
         //Pega os valores que veio por post
-        $nomeViagem = $_POST['nome'];
-        $descricaoViagem = $_POST['descricao'];
+        $nomeViagem = $_POST['nome'] ?? '';
+        $descricaoViagem = $_POST['descricao'] ?? '';
+    
+        if ($nomeViagem === '' || $descricaoViagem === '') {
+            redirecionar("./Viagem.ctrl.php?act=cad&msg=Erro ao cadastrar, preencha todos os campos obrigatórios!");
+        }
 
         //Validação do campo nome
         if (contarLetras($nomeViagem) > MAX_CHAR_LENGTH) {
-            echo "<script>alert('Erro ao cadastrar, o nome não deve possuir mais de 20 caracteres')</script>";
-            header("Refresh:0; url=./Viagem.ctrl.php?act=cad");
+            redirecionar("./Viagem.ctrl.php?act=cad&msg=Erro ao cadastrar, o nome não deve possuir mais de 20 caracteres");
             exit();
         }
 
@@ -139,19 +106,95 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         //Cria um objeto do tipo Viagem e preenche os valores dos atributos
         $viagem = new Viagem($nomeViagem, $descricaoViagem, $pathImgViagem);
 
-        if (isset($nomeViagem) && !empty($nomeViagem) && isset($descricaoViagem) && !empty($descricaoViagem) && isset($pathImgViagem)) {
-            //Salva objeto no BD
-            $deuCerto = $viagem->salvar();
-
-            if ($deuCerto) {
-                $msg = 'Viagem salva com sucesso!!';
-
-                header("Location: ./Viagem.ctrl.php?act=galeria&msg=$msg");
-            }
-        } else {
-            echo "<script>alert('Erro ao cadastrar, preencha todos os campos obrigatórios!')</script>";
-            header("Refresh:0; url=./Viagem.ctrl.php?act=cad");
+        if (!$viagem->salvar()) {
+            throw new Exception('Erro ao salvar viagem.');
         }
-    }
 
+        redirecionar("./Viagem.ctrl.php?act=galeria&msg=Viagem salva com sucesso!!");
+    } catch (Exception $error) {
+        redirecionar("./Viagem.ctrl.php?act=cad&msg=" . urlencode($e->getMessage()));
+    }
+}
+
+function apagarViagem()
+{
+    try {
+        $idViagem = obterId();
+
+        if (!Viagem::idIsValid($idViagem)) {
+            throw new InvalidArgumentException("ID inválido!");
+        }
+
+        if (!Viagem::apagar($idViagem)) {
+            throw new Exception("Erro ao apagar viagem!");
+        }
+
+        redirecionar("./Viagem.ctrl.php?act=galeria&msg=Viagem excluida com sucesso!");
+    } catch (InvalidArgumentExcpetion $error) {
+        redirecionar("./Viagem.ctrl.php?act=galeria&msg=" . urlencode($error->getMessage()));
+    } catch (Exception $error) {
+        redirecionar("./Viagem.ctrl.php?act=galeria&msg=" . urlencode($error->getMessage()));
+    }
+}
+
+function favoritarViagem()
+{
+    try {
+        $idViagem = obterId();
+    
+        if (!Viagem::idIsValid($idViagem)) {
+            throw new InvalidArgumentException("ID inválido!");
+        }
+
+        Viagem::alternarFavorito($idViagem);
+
+        redirecionar('./Viagem.ctrl.php?act=galeria');
+    } catch (InvalidArgumentException $error) {
+        error_log($error->getMessage());
+        redirecionar('./Viagem.ctrl.php?act=galeria&msg=' . urlencode($error->getMessage()));
+    }
+}
+
+if (isset($_GET['msg'])) {
+    $msg = $_GET['msg'];
+    echo "<script>alert('$msg')</script>";
+    removerMsg();
+}
+
+$metodoRequisicao = $_SERVER['REQUEST_METHOD'];
+$acao = $_GET['act'] ?? null;
+
+if ($metodoRequisicao === 'GET') {
+    switch ($acao) {
+        case 'cad':
+            carregarCadastro();
+            break;
+
+        case 'galeria':
+            carregarGaleria();
+            break;
+
+        case 'favoritar':
+            favoritarViagem();
+            break;
+        
+        case 'del':
+            apagarViagem();
+            break;
+        
+        default:
+            carregarHome();
+            break;
+    }
+} 
+
+if ($metodoRequisicao === 'POST') {
+    switch ($acao) {
+        case 'save':
+            salvarViagem();
+            break;
+
+        default:
+            redirecionar("./Viagem.ctrl.php");
+    }
 }
