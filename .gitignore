@@ -1,5 +1,5 @@
 /vendor/
-
+composer.phar
 
 # PHP CS Fixer configuration
 /.php-cs-fixer.cache
