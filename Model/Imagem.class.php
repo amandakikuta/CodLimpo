@@ -20,7 +20,7 @@ class ImagemPHP
      * Se já houver imagem com mesmo nome, sobreescreve.
      */
 
-    public static function salvaImagem($file_input_name)
+    public static function salvarImagem($file_input_name)
     {
         $erro = null;
         //Se não exsitir pasta, cria

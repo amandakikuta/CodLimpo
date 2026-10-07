@@ -5,30 +5,30 @@ require_once(dirname(__DIR__) . '/Model/Imagem.class.php');
 require_once(dirname(__DIR__) . '/Model/Viagem.class.php');
 require_once(dirname(__DIR__) . '/Model/Database.class.php');
 
-function carregaHome()
+function carregarHome()
 {
     //Define a página em que o usuário se encontra a partir da função
-    $pgAtual = 'home';
+    $paginaAtual = 'home';
 
     include_once(dirname(__DIR__) . '/View/cabecalho.php');
     include_once(dirname(__DIR__) . '/View/home.php');
     include_once(dirname(__DIR__) . '/View/rodape.php');
 }
 
-function carregaCadastro()
+function carregarCadastro()
 {
     //Define a página em que o usuário se encontra a partir da função
-    $pgAtual = 'cadastrar';
+    $paginaAtual = 'cadastrar';
 
     include_once(dirname(__DIR__) . '/View/cabecalho.php');
     include_once(dirname(__DIR__) . '/View/cadastrar.php');
     include_once(dirname(__DIR__) . '/View/rodape.php');
 }
 
-function carregaGaleria()
+function carregarGaleria()
 {
     //Define a página em que o usuário se encontra a partir da função
-    $pgAtual = 'galeria';
+    $paginaAtual = 'galeria';
 
     include_once(dirname(__DIR__) . '/View/cabecalho.php');
     include_once(dirname(__DIR__) . '/View/galeria.php');
@@ -44,7 +44,7 @@ function contarLetras($texto)
     return $qtdeLetras;
 }
 
-function removeMsg()
+function removerMsg()
 {
     $url = $_SERVER['REQUEST_URI'];
 
@@ -57,7 +57,7 @@ function removeMsg()
 if (isset($_GET['msg'])) {
     $msg = $_GET['msg'];
     echo "<script>alert('$msg')</script>";
-    removeMsg();
+    removerMsg();
 }
 
 //Chega por get
@@ -65,12 +65,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
 
     //Cadastrar
     if (isset($_GET['act']) && $_GET['act'] == 'cad') {
-        carregaCadastro();
+        carregarCadastro();
     }
 
     //Carrega Galeria
     elseif (isset($_GET['act']) && $_GET['act'] == 'galeria') {
-        carregaGaleria();
+        carregarGaleria();
     }
 
     //Favoritar
@@ -82,12 +82,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
 
         //Faz a ação se tiver o id
         elseif (isset($_GET['id'])) {
-            $id = $_GET['id'];
+            $idViagem = $_GET['id'];
 
-            if (Viagem::buscarId($id)) {
-                Viagem::desfavoritar($id);
-            } elseif (!Viagem::buscarId($id)) {
-                Viagem::favoritar($id);
+            if (Viagem::buscarPorId($idViagem)) {
+                Viagem::desfavoritar($idViagem);
+            } elseif (!Viagem::buscarPorId($idViagem)) {
+                Viagem::favoritar($idViagem);
             }
         }
     }
@@ -102,8 +102,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
 
         //Faz a ação se tiver o id
         elseif (isset($_GET['id'])) {
-            $id = $_GET['id'];
-            $deuCerto = Viagem::apagar($id);
+            $idViagem = $_GET['id'];
+            $deuCerto = Viagem::apagar($idViagem);
 
             //* Carrega a página principal
             $msg = 'Viagem excluida com sucesso!';
@@ -111,7 +111,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
         }
 
     } else {
-        carregaHome();
+        carregarHome();
     }
 
 }
@@ -121,23 +121,23 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     if (isset($_POST['act']) && $_POST['act'] == 'save') {
         //Pega os valores que veio por post
-        $nome = $_POST['nome'];
-        $desc = $_POST['descricao'];
+        $nomeViagem = $_POST['nome'];
+        $descricaoViagem = $_POST['descricao'];
 
         //Validação do campo nome
-        if (contarLetras($nome) > 20) {
+        if (contarLetras($nomeViagem) > 20) {
             echo "<script>alert('Erro ao cadastrar, o nome não deve possuir mais de 20 caracteres')</script>";
             header("Refresh:0; url=./Viagem.ctrl.php?act=cad");
             exit();
         }
 
         //Salva imagem na pasta
-        $path_img = ImagemPHP::salvaImagem('imagem');
+        $pathImgViagem = ImagemPHP::salvarImagem('imagem');
 
         //Cria um objeto do tipo Viagem e preenche os valores dos atributos
-        $viagem = new Viagem($nome, $desc, $path_img);
+        $viagem = new Viagem($nomeViagem, $descricaoViagem, $pathImgViagem);
 
-        if (isset($nome) && !empty($nome) && isset($desc) && !empty($desc) && isset($path_img)) {
+        if (isset($nomeViagem) && !empty($nomeViagem) && isset($descricaoViagem) && !empty($descricaoViagem) && isset($pathImgViagem)) {
             //Salva objeto no BD
             $deuCerto = $viagem->salvar();
 

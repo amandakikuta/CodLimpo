@@ -40,15 +40,15 @@ if ($atual != CAMINHO) {
             </div>
             <div class="nav-filha py-1 azulClaro patrickHand sub-titulo negrito">
                 <a class="nav-elemento fonte-preto" href="./../Controller/Viagem.ctrl.php"
-                    <?php echo $pgAtual == 'home' ? 'hidden' : '' ?>
+                    <?php echo $paginaAtual == 'home' ? 'hidden' : '' ?>
                 >HOME</a>
 
                 <a class="nav-elemento fonte-preto" href="./../Controller/Viagem.ctrl.php?act=cad"
-                    <?php echo $pgAtual == 'cadastrar' ? 'hidden' : '' ?>
+                    <?php echo $paginaAtual == 'cadastrar' ? 'hidden' : '' ?>
                 >CADASTRAR</a>
 
                 <a class="nav-elemento fonte-preto" href="./../Controller/Viagem.ctrl.php?act=galeria"
-                    <?php echo $pgAtual == 'galeria' ? 'hidden' : '' ?>
+                    <?php echo $paginaAtual == 'galeria' ? 'hidden' : '' ?>
                 >LISTAGEM</a>
             </div>
         </div>

@@ -12,11 +12,11 @@ if ($atual != CAMINHO) {
 
 class Viagem
 {
-    private $id;
-    private $nome;
-    private $descricao;
-    private $path_img;
-    private $favorito;
+    private $idViagem;
+    private $nomeViagem;
+    private $descricaoViagem;
+    private $pathImgViagem;
+    private $favoritoViagem;
 
     //Getters
     public function __get($name)
@@ -35,24 +35,24 @@ class Viagem
         }
     }
 
-    public function __construct($nome, $descricao, $path_img)
+    public function __construct($nomeViagem, $descricaoViagem, $pathImgViagem)
     {
-        $this->nome = $nome;
-        $this->descricao = $descricao;
-        $this->path_img = $path_img;
+        $this->nomeViagem = $nomeViagem;
+        $this->descricaoViagem = $descricaoViagem;
+        $this->pathImgViagem = $pathImgViagem;
     }
 
     public function salvar()
     {
         try {
-            $con = Database::conecta();
+            $con = Database::conectar();
 
             //Prepara sql
             $sql = $con->prepare('INSERT INTO viagem VALUES (default, :nome, :descricao, :img, false)');
 
-            $sql->bindValue(':nome', $this->nome);
-            $sql->bindValue(':descricao', $this->descricao);
-            $sql->bindValue(':img', $this->path_img);
+            $sql->bindValue(':nome', $this->nomeViagem);
+            $sql->bindValue(':descricao', $this->descricaoViagem);
+            $sql->bindValue(':img', $this->pathImgViagem);
 
             return $sql->execute();
         } catch (PDOException $e) {
@@ -62,13 +62,13 @@ class Viagem
     }
 
     //Excluir
-    public static function apagar($id)
+    public static function apagar($idViagem)
     {
         try {
-            $conn = Database::conecta();
+            $conn = Database::conectar();
 
             $stmt = $conn->prepare("DELETE FROM viagem WHERE id=:id");
-            $stmt->bindParam(':id', $id);
+            $stmt->bindParam(':id', $idViagem);
 
             return $stmt->execute();
         } catch (PDOException $e) {
@@ -79,7 +79,7 @@ class Viagem
     //Listar
     public static function listar()
     {
-        $conn = Database::conecta();
+        $conn = Database::conectar();
 
         $stmt = $conn->prepare('SELECT * FROM viagem');
 
@@ -92,8 +92,8 @@ class Viagem
                 $linha['path_imagem'],
             );
 
-            $viagem->id = $linha['id'];
-            $viagem->favorito = $linha['favorito'];
+            $viagem->idViagem = $linha['id'];
+            $viagem->favoritoViagem = $linha['favorito'];
 
             $viagens[] = $viagem;
         }
@@ -106,7 +106,6 @@ class Viagem
     {
 
         if (!empty(Viagem::listar())) {
-            $qtde = count(Viagem::listar());
             $i = 0;
 
             foreach (Viagem::listar() as $viagem) {
@@ -118,8 +117,8 @@ class Viagem
                 echo "
                 <div class=\"flex my-4 mx-2\">
                     <div class=\"nav-filha elemento-titulo border-radius azul\">
-                        <div id=\"$viagem->id\" class=\"fonte-amarelo m-rigth\"";
-                if (!$viagem->favorito) {
+                        <div id=\"$viagem->idViagem\" class=\"fonte-amarelo m-rigth\"";
+                if (!$viagem->favoritoViagem) {
                     echo"style=\"display: none;\"";
                 } echo">
                             <svg xmlns=\"http://www.w3.org/2000/svg\" width=\"16\" height=\"16\" fill=\"currentColor\" class=\"bi bi-star\" viewBox=\"0 0 16 16\">
@@ -127,10 +126,10 @@ class Viagem
                             </svg>
                         </div>
 
-                        <a onclick=\"favoritar($viagem->id)\" class=\"fonte-branco patrickHand\">$viagem->nome</a>
+                        <a onclick=\"favoritar($viagem->idViagem)\" class=\"fonte-branco patrickHand\">$viagem->nomeViagem</a>
                         <script type=\"text/javascript\" src=\"./../View/js/ajax.js\"></script>
 
-                        <a class=\"fonte-azul m-left\" href=\"./../Controller/Viagem.ctrl.php?act=del&id={$viagem->id}\">
+                        <a class=\"fonte-azul m-left\" href=\"./../Controller/Viagem.ctrl.php?act=del&id={$viagem->idViagem}\">
                             <svg xmlns=\"http://www.w3.org/2000/svg\" width=\"25\" height=\"25\" fill=\"currentColor\" class=\"bi bi-x\" viewBox=\"0 0 16 16\">
                             <path d=\"M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z\"/>
                             </svg>
@@ -139,8 +138,8 @@ class Viagem
 
                     <div class=\"flex bloco p-bloco azulClaro mt-15\">
                         <figure class=\"flex\">
-                            <img class=\"border-img\" width=\"300px\" src=\"$viagem->path_img\" alt=\"foto da viagem\">
-                            <div class=\"desc mt-1\">$viagem->descricao</div>
+                            <img class=\"border-img\" width=\"300px\" src=\"$viagem->pathImgViagem\" alt=\"foto da viagem\">
+                            <div class=\"desc mt-1\">$viagem->descricaoViagem</div>
                         </figure>
                     </div>
                 </div>
@@ -160,13 +159,13 @@ class Viagem
     }
 
     //Favoritar
-    public static function favoritar($id)
+    public static function favoritar($idViagem)
     {
         try {
-            $conn = Database::conecta();
+            $conn = Database::conectar();
 
             $stmt = $conn->prepare("UPDATE viagem SET favorito = true WHERE id=:id");
-            $stmt->bindParam(':id', $id);
+            $stmt->bindParam(':id', $idViagem);
 
             return $stmt->execute();
         } catch (PDOException $e) {
@@ -175,13 +174,13 @@ class Viagem
     }
 
     //Desfavoritar
-    public static function desfavoritar($id)
+    public static function desfavoritar($idViagem)
     {
         try {
-            $conn = Database::conecta();
+            $conn = Database::conectar();
 
             $stmt = $conn->prepare("UPDATE viagem SET favorito = false WHERE id=:id");
-            $stmt->bindParam(':id', $id);
+            $stmt->bindParam(':id', $idViagem);
 
             return $stmt->execute();
         } catch (PDOException $e) {
@@ -190,19 +189,19 @@ class Viagem
     }
 
     //Buscar por id
-    public static function buscarId($id)
+    public static function buscarPorId($idViagem)
     {
         try {
-            $conn = Database::conecta();
+            $conn = Database::conectar();
 
             $stmt = $conn->prepare("SELECT * FROM viagem WHERE id=:id");
-            $stmt->bindParam(':id', $id);
+            $stmt->bindParam(':id', $idViagem);
 
             $stmt->execute();
             $linha = $stmt->fetch();
             return $linha['favorito'];
         } catch (PDOException $e) {
-            die("Erro ao desfavoritar! " . $e->getMessage());
+            die("Erro ao procurar ID! " . $e->getMessage());
         }
     }
 }

@@ -16,7 +16,7 @@ class Database
     private const username = "root";
     private const password = "";
 
-    public static function conecta()
+    public static function conectar()
     {
         $conexao = null;
         try {
